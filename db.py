@@ -1,12 +1,13 @@
 import mysql.connector as mysql
-from app import app
+
 
 
 def getDB(config):
     db = mysql.connect(
-        host=app.config['HOST'],
-        user=app.config['USER'],
-        password=app.config['PASSWORD'], 
-        database = app.config['DATABASE'],
+        host=config['HOST'],
+        port=config['PORT'],
+        user=config['USER'],
+        password=config['PASSWORD'], 
+        database =config['DATABASE'],
     )
     return db

@@ -7,8 +7,8 @@ app.config.from_pyfile("config.py")
 
 @app.route("/")
 def hello_world():
-    db = getDB(app.config)
-    cursor = db.cursor()
-    cursor.execute("SHOW DATABASES")
-    databases = cursor.fetchall()
-    return json.dump(databases)
+    with getDB(app.config) as db:
+        cursor = db.cursor()
+        cursor.execute("SHOW DATABASES")
+        databases = cursor.fetchall()
+        return "test"
