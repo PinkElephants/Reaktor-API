@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request, abort, Response
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
@@ -19,12 +19,13 @@ class User(db.Model):
        """Return object data in easily serializable format"""
        return {
            'id'         : self.id,
-           'uuid': self.uuid,
+           'uuid'       : self.uuid,
+           'start_job'  : self.finishJob,
+           'finish_job' : self.finishJob,           
        }
 
 with app.app_context():
     db.create_all()
-
     # db.session.add(User(uuid="example"))
     # db.session.commit()
 
@@ -34,9 +35,15 @@ with app.app_context():
 def hello_world():
     return jsonify(status = "I am working")
 
+@app.route("/user/<string:uuid_request>", methods = ['POST', 'GET'])
+def user_profile(uuid_request):
+    user = db.session.query(User).filter(User.uuid==uuid_request).first()
+    if user is None:
+        abort(Response("User not found", 404))
+
+    if request.method == 'POST':
+        data = request.get_json()
+        return "NOT READY YET"
 
 
-@app.route("/user")
-def user_profile():
-    query = db.session.query(User).order_by(User.id)
-    return jsonify(json_list = [i.serialize for i in query.all()])
+    return jsonify(user.serialize)
