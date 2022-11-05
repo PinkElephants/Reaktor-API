@@ -29,11 +29,11 @@ def process_music(json):
     res = pd.concat([confident_major,confident_minor,unconfident], axis=1)
     res = res.loc[:,~res.columns.duplicated()]
     res['happyness_index'] = res['major_sum'] / (res['major_sum'] + res['minor_sum'] +res['unconf_sum'] + np.finfo(float).eps)
-    res['sadness_indes'] = res['major_sum'] / (res['major_sum'] + res['minor_sum'] +res['unconf_sum'] + np.finfo(float).eps)
+    res['sadness_indes'] = res['minor_sum'] / (res['major_sum'] + res['minor_sum'] +res['unconf_sum'] + np.finfo(float).eps)
     return res
 
 with open('parsed_music.json') as f:
     json_file = json.load(f)
 
 res = process_music(json)
-print(res.to_json())
+print(res)
