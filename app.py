@@ -10,13 +10,11 @@ migrate = Migrate(app, db)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    uuid = db.Column(db.String(32),  unique=True, nullable=False)
+    uuid = db.Column(db.String(90),  unique=True, nullable=False)
 
     startJob = db.Column(db.DateTime, nullable=True)
     finishJob = db.Column(db.DateTime, nullable=True)
 
-    access_spotify = db.Column(db.String, nullable=True)
-    access_spotify_expires = db.Column(db.Integer, nullable=True)
     refresh_spotify = db.Column(db.String, nullable=True)
     
     @property
@@ -52,30 +50,16 @@ def user_profile(uuid_request):
         start_job = datetime.datetime.strptime(jsonData["start_job"], '%H:%M')
         finish_job = datetime.datetime.strptime(jsonData["finish_job"], '%H:%M')
 
-        access_spotify = access_spotify_expires = refresh_spotify = None
-        if "access_spotify" in jsonData:
-            access_spotify = jsonData["access_spotify"]
-        if "access_spotify_expires" in jsonData:
-            access_spotify_expires = jsonData["access_spotify_expires"]
-        if "refresh_spotify" in jsonData:
-            refresh_spotify = jsonData["refresh_spotify"]
-
         if user is None:
             user = User(
                 uuid = uuid_request, 
                 startJob = start_job, 
                 finishJob=finish_job, 
-                access_spotify = access_spotify, 
-                access_spotify_expires = access_spotify_expires,
-                refresh_spotify = refresh_spotify,
                 )
             db.session.add(user)
         else:
             user.startJob = start_job
             user.finishJob = finish_job
-            user.access_spotify = access_spotify 
-            user.access_spotify_expires = access_spotify_expires
-            user.refresh_spotify = refresh_spotify
 
         db.session.commit()
         return Response("OK", 200)
