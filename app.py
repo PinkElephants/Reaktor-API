@@ -43,7 +43,7 @@ class MusicMood(db.Model):
        return {
            'id'         : self.id,
            'user_uuid'  : user_uuid,
-           'played_at'  : self.played_at,
+           'played_at'  : self.played_at.isoformat(),
            'major_sum'  : self.major_sum,
            'minor_sum'  : self.minor_sum,     
            'unconf_sum'  : self.unconf_sum,
