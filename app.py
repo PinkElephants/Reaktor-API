@@ -11,8 +11,13 @@ migrate = Migrate(app, db)
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     uuid = db.Column(db.String(32),  unique=True, nullable=False)
+
     startJob = db.Column(db.DateTime, nullable=True)
     finishJob = db.Column(db.DateTime, nullable=True)
+
+    access_spotify = db.Column(db.String, nullable=True)
+    access_spotify_expires= db.Column(db.DateTime, nullable=True)
+    refresh_spotify = db.Column(db.String, nullable=True)
     
     @property
     def serialize(self):
@@ -26,6 +31,11 @@ class User(db.Model):
 
 with app.app_context():
     db.create_all()
+
+@app.before_request
+def log_request_info():
+    app.logger.debug('Headers: %s', request.headers)
+    app.logger.debug('Body: %s', request.get_data())
     
 @app.route("/")
 def hello_world():
@@ -37,6 +47,7 @@ def user_profile(uuid_request):
 
     if request.method == 'POST':
         jsonData = request.get_json()
+
         start_job = datetime.datetime.strptime(jsonData["start_job"], '%H:%M')
         finish_job = datetime.datetime.strptime(jsonData["finish_job"], '%H:%M')
 
@@ -44,9 +55,8 @@ def user_profile(uuid_request):
             user = User(uuid = uuid_request, startJob = start_job, finishJob=finish_job)
             db.session.add(user)
         else:
-            user.start_job = start_job
-            user.finish_job = finish_job
-            db.session.query(User).filter(User.uuid==uuid_request).update(user)
+            user.startJob = start_job
+            user.finishJob = finish_job
 
         db.session.commit()
         return Response("OK", 200)
