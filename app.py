@@ -16,7 +16,7 @@ class User(db.Model):
     finishJob = db.Column(db.DateTime, nullable=True)
 
     access_spotify = db.Column(db.String, nullable=True)
-    access_spotify_expires= db.Column(db.DateTime, nullable=True)
+    access_spotify_expires = db.Column(db.Integer, nullable=True)
     refresh_spotify = db.Column(db.String, nullable=True)
     
     @property
@@ -31,11 +31,6 @@ class User(db.Model):
 
 with app.app_context():
     db.create_all()
-
-@app.before_request
-def log_request_info():
-    app.logger.info('Headers: %s', request.headers)
-    app.logger.info('Body: %s', request.get_data())
     
 @app.route("/")
 def hello_world():
@@ -47,16 +42,40 @@ def user_profile(uuid_request):
 
     if request.method == 'POST':
         jsonData = request.get_json()
-
+        app.logger.info('POST body %s', jsonData)
+        
+        if "start_job" not in jsonData:
+            jsonData["start_job"] = "09:00"
+        if "finish_job" not in jsonData:
+            jsonData["finish_job"] = "18:00"
+            
         start_job = datetime.datetime.strptime(jsonData["start_job"], '%H:%M')
         finish_job = datetime.datetime.strptime(jsonData["finish_job"], '%H:%M')
 
+        access_spotify = access_spotify_expires = refresh_spotify = None
+        if "access_spotify" in jsonData:
+            access_spotify = jsonData["access_spotify"]
+        if "access_spotify_expires" in jsonData:
+            access_spotify_expires = jsonData["access_spotify_expires"]
+        if "refresh_spotify" in jsonData:
+            refresh_spotify = jsonData["refresh_spotify"]
+
         if user is None:
-            user = User(uuid = uuid_request, startJob = start_job, finishJob=finish_job)
+            user = User(
+                uuid = uuid_request, 
+                startJob = start_job, 
+                finishJob=finish_job, 
+                access_spotify = access_spotify, 
+                access_spotify_expires = access_spotify_expires,
+                refresh_spotify = refresh_spotify,
+                )
             db.session.add(user)
         else:
             user.startJob = start_job
             user.finishJob = finish_job
+            user.access_spotify = access_spotify 
+            user.access_spotify_expires = access_spotify_expires
+            user.refresh_spotify = refresh_spotify
 
         db.session.commit()
         return Response("OK", 200)
