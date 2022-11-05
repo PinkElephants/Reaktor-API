@@ -65,7 +65,7 @@ with app.app_context():
         minor_sum = 3,
         unconf_sum = 1,
         happyness_index = 0.0,
-        sadness_indes = 0.0,
+        sadness_indes = 0.75,
     ))
     db.session.add(MusicMood(
         id = 2,
@@ -75,7 +75,7 @@ with app.app_context():
         minor_sum = 0,
         unconf_sum = 0,
         happyness_index = 1,
-        sadness_indes = 1,
+        sadness_indes = 0,
     ))
     db.session.add(MusicMood(
         id = 3,
@@ -105,7 +105,7 @@ with app.app_context():
         minor_sum = 8,
         unconf_sum = 2,
         happyness_index = 0.3333333333,
-        sadness_indes = 0.3333333333,
+        sadness_indes = 0.533333,
     ))
     db.session.commit()
 
