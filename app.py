@@ -14,8 +14,6 @@ class User(db.Model):
 
     startJob = db.Column(db.DateTime, nullable=True)
     finishJob = db.Column(db.DateTime, nullable=True)
-
-    refresh_spotify = db.Column(db.String, nullable=True)
     
     @property
     def serialize(self):
