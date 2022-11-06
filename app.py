@@ -51,6 +51,11 @@ class MusicMood(db.Model):
            'sadness_indes'  : self.sadness_indes,       
        }
 
+class HapinessScore(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_uuid = db.Column(db.String(90), nullable=False)
+    scored_at = db.Column(db.DateTime, nullable=False)
+    score = db.Column(db.Float, nullable=False)
 
 with app.app_context():
     db.create_all()
@@ -107,6 +112,38 @@ with app.app_context():
         happyness_index = 0.3333333333,
         sadness_indes = 0.533333,
     ))
+    db.session.add(HapinessScore(
+        id = 1,
+        user_uuid = "861B760D-EE8A-4906-BAF3-DCEBA08C6243",
+        scored_at = datetime.datetime.fromtimestamp(1667260800),
+        score = 0.0
+    ))
+    db.session.add(HapinessScore(
+        id = 2,
+        user_uuid = "861B760D-EE8A-4906-BAF3-DCEBA08C6243",
+        scored_at = datetime.datetime.fromtimestamp(1667347200),
+        score = 8.350000023841858
+        
+    ))
+    db.session.add(HapinessScore(
+        id = 3,
+        user_uuid = "861B760D-EE8A-4906-BAF3-DCEBA08C6243",
+        scored_at = datetime.datetime.fromtimestamp(1667433600),
+        score = 5.0,   
+    ))
+    db.session.add(HapinessScore(
+        id = 4,
+        user_uuid = "861B760D-EE8A-4906-BAF3-DCEBA08C6243",
+        scored_at = datetime.datetime.fromtimestamp(1667520000),
+        score = 0.0,
+        
+    ))
+    db.session.add(HapinessScore(
+        id = 5,
+        user_uuid = "861B760D-EE8A-4906-BAF3-DCEBA08C6243",
+        scored_at = datetime.datetime.fromtimestamp(1667606400),
+        score = 9.500000402331352,
+    ))
     db.session.commit()
 
 @app.route("/")
@@ -149,4 +186,6 @@ def user_profile(uuid_request):
     music = db.session.query(MusicMood).all()
     userData = user.serialize
     userData["music_mood"] = [mm.serialize(uuid_request) for mm in music]
+
+    hapiness = db.session.query(HapinessScore).all()
     return jsonify(userData)
