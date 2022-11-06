@@ -57,9 +57,19 @@ class HapinessScore(db.Model):
     scored_at = db.Column(db.DateTime, nullable=False)
     score = db.Column(db.Float, nullable=False)
 
+    def serialize(self, user_uuid):
+       """Return object data in easily serializable format"""
+       return {
+           'id'         : self.id,
+           'user_uuid'  : user_uuid,
+           'scored_at'  : self.scored_at.isoformat(),
+           'score'      : self.score,  
+       }
+
 with app.app_context():
     db.create_all()
     db.session.query(MusicMood).delete()
+    db.session.query(HapinessScore).delete()
     db.session.commit()
     
     db.session.add(MusicMood(
@@ -142,7 +152,7 @@ with app.app_context():
         id = 5,
         user_uuid = "861B760D-EE8A-4906-BAF3-DCEBA08C6243",
         scored_at = datetime.datetime.fromtimestamp(1667606400),
-        score = 9.500000402331352,
+        score = 0.9500000402331352,
     ))
     db.session.commit()
 
